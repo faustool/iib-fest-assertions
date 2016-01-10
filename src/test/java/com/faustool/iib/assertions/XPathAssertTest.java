@@ -21,21 +21,21 @@ public class XPathAssertTest {
 	public void testBooleanTrue() {
 		Node root = doc.createElement("root");
 		doc.appendChild(root);
-		XPathAssert.assertThat(doc).booleanOf("/root").isTrue();
+		XPathAssert.assertThat(doc).at("/root").asBoolean().isTrue();
 	}
 
 	@Test
 	public void testHasNotRoot() {
 		Node root = doc.createElement("root");
 		doc.appendChild(root);
-		XPathAssert.assertThat(doc).booleanOf("/rootNode").isFalse();
+		XPathAssert.assertThat(doc).at("/rootNode").asBoolean().isFalse();
 	}
 
 	@Test
 	public void testValueOfNull() {
 		Node root = doc.createElement("root");
 		doc.appendChild(root);
-		XPathAssert.assertThat(doc).stringOf("/root").isEmpty();
+		XPathAssert.assertThat(doc).at("/root").asString().isEmpty();
 	}
 
 	@Test
@@ -43,7 +43,7 @@ public class XPathAssertTest {
 		Node root = doc.createElement("root");
 		doc.appendChild(root);
 		// String XPath expressions never return null
-		XPathAssert.assertThat(doc).stringOf("/rootNode").isEmpty();
+		XPathAssert.assertThat(doc).at("/rootNode").asString().isEmpty();
 	}
 
 	@Test
@@ -51,7 +51,41 @@ public class XPathAssertTest {
 		Node root = doc.createElement("root");
 		doc.appendChild(root);
 		root.setTextContent("something");
-		XPathAssert.assertThat(doc).stringOf("/root").isEqualTo("something");
+		XPathAssert.assertThat(doc).at("/root").asString().isEqualTo("something");
 	}
 
+	@Test
+	public void testNSIgnore() {
+		Node root = doc.createElementNS("http://test", "root");
+		doc.appendChild(root);
+		XPathAssert.assertThat(doc).at("/root").asBoolean().isFalse();
+	}
+
+	@Test
+	public void testNSWithPrefix() {
+		Node root = doc.createElementNS("http://test", "root");
+		doc.appendChild(root);
+		XPathAssert.assertThat(doc).withNS("ns", "http://test").at("/ns:root").asBoolean().isTrue();
+	}
+
+	@Test(expected = AssertionError.class)
+	public void testNSWithWrongPrefix() {
+		Node root = doc.createElementNS("http://test", "root");
+		doc.appendChild(root);
+		XPathAssert.assertThat(doc).withNS("ns", "http://test").at("/sn:root").asBoolean();
+	}
+
+	@Test
+	public void testNSWithDefault() {
+		Node root = doc.createElementNS("http://test", "root");
+		doc.appendChild(root);
+		XPathAssert.assertThat(doc).withNS("http://test").at("/:root").asBoolean().isTrue();
+	}
+
+	@Test
+	public void testNSWithWrongDefault() {
+		Node root = doc.createElementNS("http://test", "root");
+		doc.appendChild(root);
+		XPathAssert.assertThat(doc).withNS("http://asd").at("/:root").asBoolean().isFalse();
+	}
 }
