@@ -77,7 +77,7 @@ public class RecordedTestDataListAssertTest {
 	}
 
 	@Test
-	public void testMessageNotSame() {
+	public void testMessageSame() {
 		List<RecordedTestData> list = new ArrayList<>();
 		RecordedTestData rtd = mock(RecordedTestData.class);
 		list.add(rtd);
@@ -88,6 +88,20 @@ public class RecordedTestDataListAssertTest {
 		when(rtd.getTestData()).thenReturn(actual);
 		
 		RecordedTestDataListAssert.assertThat(list).hasMessageAt(0, "some text");
+	}
+
+	@Test(expected = AssertionError.class)
+	public void testMessageNotSame() {
+		List<RecordedTestData> list = new ArrayList<>();
+		RecordedTestData rtd = mock(RecordedTestData.class);
+		list.add(rtd);
+
+		TestData actual = new TestData();
+		actual.setMessage(newNode("some text"));
+		
+		when(rtd.getTestData()).thenReturn(actual);
+		
+		RecordedTestDataListAssert.assertThat(list).hasMessageAt(0, "some other text");
 	}
 
 	protected Text newNode(String text) {
