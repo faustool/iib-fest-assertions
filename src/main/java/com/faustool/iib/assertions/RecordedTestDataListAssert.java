@@ -29,7 +29,6 @@ public class RecordedTestDataListAssert extends GenericAssert<RecordedTestDataLi
 	}
 
 	protected TestData getActualTestDataAt(int stepAt) {
-		Assertions.assertThat(this.actual).isNotNull().overridingErrorMessage(String.format("No steps were recorded"));
 		Assertions.assertThat(this.actual).isNotEmpty().overridingErrorMessage(String.format("No steps were recorded"));
 
 		TestData actualData = null;
@@ -42,7 +41,7 @@ public class RecordedTestDataListAssert extends GenericAssert<RecordedTestDataLi
 		}
 
 		Assertions.assertThat(actualData).isNotNull()
-				.overridingErrorMessage(String.format("The step %d contains no step data", stepAt));
+				.overridingErrorMessage(String.format("The step %d contains no test data", stepAt));
 
 		return actualData;
 	}
