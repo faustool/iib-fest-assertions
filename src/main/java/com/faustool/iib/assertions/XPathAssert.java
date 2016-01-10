@@ -1,11 +1,13 @@
 package com.faustool.iib.assertions;
 
+import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.fest.assertions.Assertions;
+import org.fest.assertions.BooleanAssert;
 import org.fest.assertions.GenericAssert;
 import org.fest.assertions.StringAssert;
 import org.w3c.dom.Node;
@@ -23,43 +25,24 @@ public class XPathAssert extends GenericAssert<XPathAssert, Node> {
 		return new XPathAssert(actual);
 	}
 
-	public XPathAssert has(String xpathString) {
+	public BooleanAssert booleanOf(String xpathString) {
 		if (actual == null)
 			failure("The XML structure is null");
 
+		Boolean result = null;
+		
 		try {
-			XPathExpression xpath = xpathFactory.newXPath().compile(xpathString);
-			Boolean result = (Boolean) xpath.evaluate(actual, XPathConstants.BOOLEAN);
-
-			if (!result)
-				failure(String.format("Nothing could be found at path %s", xpathString));
-
+			XPath newXPath = xpathFactory.newXPath();
+			XPathExpression xpath = newXPath.compile(xpathString);
+			result = (Boolean) xpath.evaluate(actual, XPathConstants.BOOLEAN);
 		} catch (XPathExpressionException e) {
 			fail("Error compiling XPath", e);
 		}
 
-		return this;
+		return Assertions.assertThat(result);
 	}
 
-	public XPathAssert hasNot(String xpathString) {
-		if (actual == null)
-			failure("The XML structure is null");
-
-		try {
-			XPathExpression xpath = xpathFactory.newXPath().compile(xpathString);
-			Boolean result = (Boolean) xpath.evaluate(actual, XPathConstants.BOOLEAN);
-
-			if (result)
-				failure(String.format("There is a node at path %s", xpathString));
-
-		} catch (XPathExpressionException e) {
-			fail("Error compiling XPath", e);
-		}
-
-		return this;
-	}
-
-	public StringAssert valueOf(String xpathString) {
+	public StringAssert stringOf(String xpathString) {
 		if (actual == null)
 			failure("The XML structure is null");
 

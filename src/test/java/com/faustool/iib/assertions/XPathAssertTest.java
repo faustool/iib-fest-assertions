@@ -18,28 +18,40 @@ public class XPathAssertTest {
 	}
 
 	@Test
-	public void testHasRoot() {
+	public void testBooleanTrue() {
 		Node root = doc.createElement("root");
-		XPathAssert.assertThat(root).has("/root");
+		doc.appendChild(root);
+		XPathAssert.assertThat(doc).booleanOf("/root").isTrue();
 	}
 
 	@Test
 	public void testHasNotRoot() {
 		Node root = doc.createElement("root");
-		XPathAssert.assertThat(root).hasNot("/rootNode");
+		doc.appendChild(root);
+		XPathAssert.assertThat(doc).booleanOf("/rootNode").isFalse();
 	}
 
 	@Test
 	public void testValueOfNull() {
 		Node root = doc.createElement("root");
-		XPathAssert.assertThat(root).valueOf("/root").isNull();
+		doc.appendChild(root);
+		XPathAssert.assertThat(doc).stringOf("/root").isEmpty();
 	}
-	
+
+	@Test
+	public void testValueOfNotFound() {
+		Node root = doc.createElement("root");
+		doc.appendChild(root);
+		// String XPath expressions never return null
+		XPathAssert.assertThat(doc).stringOf("/rootNode").isEmpty();
+	}
+
 	@Test
 	public void testValueOfSomething() {
 		Node root = doc.createElement("root");
-		root.appendChild(doc.createTextNode("something"));
-		XPathAssert.assertThat(root).valueOf("/root/text()").isEqualTo("something");
+		doc.appendChild(root);
+		root.setTextContent("something");
+		XPathAssert.assertThat(doc).stringOf("/root").isEqualTo("something");
 	}
-	
+
 }
